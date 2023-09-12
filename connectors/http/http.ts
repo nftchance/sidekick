@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { Cog, Connector } from '../connector'
+import { Cog } from '@/app/components/connector/Config'
 
 const initSchema = z.object({
 	body: z.string(),
@@ -35,39 +35,30 @@ const initSchema = z.object({
 		.default('no-referrer')
 })
 
-const schema = z.object({
-	url: z.string(),
+const HttpSchema = z.object({
+	url: z.string().default('https://example.com'),
 	init: initSchema.partial()
 })
 
-export default class Http<T extends z.infer<typeof schema>> extends Cog<T> {
+type HttpSchemaType = z.infer<typeof HttpSchema>
+
+export default class Http<
+	T extends typeof HttpSchema,
+	P extends HttpSchemaType
+> extends Cog<T> {
 	constructor() {
-		super(schema)
+		super(HttpSchema)
 	}
 
 	async get(): Promise<Response | void> {
 		const latest = this.latest()
 
-		const response = await fetch(latest.url, latest.init)
+		if (!latest.valid) throw new Error('Invalid build')
+
+		const response = await fetch(latest.value.url, latest.value.init)
 			.then(response => response)
 			.catch((error: Error) => console.error(error))
 
 		return response
 	}
 }
-
-// ! Should always have the infered fields from the schema.
-const connector = new Connector<'http'>('http')
-
-// * Here, the data would be updated with useState, form data, etc.
-const cog = connector.cog.parse({
-	url: 'https://jsonplaceholder.typicode.com/todos/1',
-	init: {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}
-})
-
-connector.cog.latest()

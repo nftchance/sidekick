@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "aggregate:galaxe": "bun run scripts/aggregate/galaxe.ts",
+    "postaggregate:galaxe": "bun run scripts/aggregate/post/galaxe.ts"
   },
   "dependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
@@ -27,6 +29,12 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "bun-types": "^1.0.1",
     "prisma": "^5.2.0"
+  },
+  "module": "index.ts",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }

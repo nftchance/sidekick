@@ -1,34 +1,28 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
-import { Connector } from '@/connectors/connector'
+import { z } from 'zod'
+
+import useConnector from '@/app/lib/hooks/useConnector'
 import { COGS } from '@/connectors/lib/constants'
 import { CogType } from '@/connectors/lib/types'
 
 export default function ConnectorConfig({ type }: { type?: CogType }) {
 	const [connectorType, setConnectorType] = useState(type || 'http')
 
-	const [error, setError] = useState<string | null>(null)
+	const { connector, useCog } = useConnector(connectorType)
 
-	const connector = useMemo(() => {
-		if (!connectorType) return null
-
-		return new Connector(connectorType, {
-			url: 'https://jsonplaceholder.typicode.com/todos/1',
-			init: {
-				method: 'GET'
-			}
-		})
-	}, [connectorType])
+	const { cog, isValid, isError, isLoading } = useCog({
+		enabled: !!connectorType,
+		connector,
+		data: {
+			url: 'https://example.com'
+		}
+	})
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-
-		connector
-			?.save()
-			.then(() => setError(null))
-			.catch(err => setError(err.message))
 	}
 
 	return (
@@ -51,17 +45,67 @@ export default function ConnectorConfig({ type }: { type?: CogType }) {
 
 			<p>connectorType: {connectorType}</p>
 
-			{connector &&
-				Object.keys(connector.abstract).map(key => (
-					<div key={key}>
-						<label htmlFor={key}>{key}</label>
-						<input type="text" name={key} id={key} />
-					</div>
-				))}
+			{connector && (
+				<>
+					{Object.keys(connector.cog.schema.shape).map(key => (
+						<div key={key}>
+							<label htmlFor={key}>{key}</label>
+							<input
+								type="text"
+								name={key}
+								id={key}
+								className="text-black"
+								defaultValue={'not working'}
+							/>
+						</div>
+					))}
+
+					<hr />
+
+					<p>isValid: {isValid ? 'true' : 'false'}</p>
+					<p>isError: {isError ? 'true' : 'false'}</p>
+					<p>isLoading: {isLoading ? 'true' : 'false'}</p>
+				</>
+			)}
 
 			<hr />
 
 			<button type="submit">Submit</button>
 		</form>
 	)
+}
+
+type CogBuild = {
+	valid: boolean
+	value?: Partial<z.ParseParams>
+}
+
+export class Cog<T> {
+	schema
+	builds
+
+	constructor(_: T) {
+		this.schema = _
+
+		this.builds = [] as Array<CogBuild>
+	}
+
+	parse<P extends z.ZodTypeAny>(value: P) {
+		const valid = this.schema.safeParse(value)
+
+		const build: CogBuild = {
+			valid: valid.success,
+			value: valid ? this.schema.parse(value) : undefined
+		}
+
+		this.builds.push(build)
+
+		return build
+	}
+
+	latest() {
+		if (!this.builds.length) throw new Error('No builds found')
+
+		return this.builds[this.builds.length - 1]
+	}
 }

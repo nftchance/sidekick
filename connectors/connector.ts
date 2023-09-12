@@ -3,29 +3,6 @@ import { z } from 'zod'
 import { COGS } from './lib/constants'
 import { CogConstructor, CogType } from './lib/types'
 
-export abstract class Cog<T> {
-	schema
-	builds: T[] = []
-
-	constructor(schema: z.Schema) {
-		this.schema = schema
-	}
-
-	parse(value: T) {
-		const build = this.schema.parse(value) as T
-
-		this.builds.push(build)
-
-		return build
-	}
-
-	latest() {
-		if (!this.builds.length) throw new Error('No builds found')
-
-		return this.builds[this.builds.length - 1]
-	}
-}
-
 export class Connector<T extends CogType> {
 	cog
 
