@@ -14,11 +14,10 @@ bun i
 ## Commands
 
 👷 : For Development
+
 👁️ : For Analysis
-❌ : For CI
 
 - 👷 `bun dev` -- Run the admin interface that is used for Sandbox visualization.
   - Access the server at [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-- ❌ `bun test` -- Make sure that everything works.
-  - I have broken this, this is currently non-functional although all core features have blocking tests inline. 
-- 👁️ `bun aggregate:galaxe` -- Retrieve the historical campaigns that have run on Galaxe.
+- 👁️ `bun aggregate:galaxe` -- Retrieve the historical campaigns that have run on Galaxe in chunks and then seal them into one.
+    - Currently, we only get the 10,000 most recent campaigns due to their API having this hard limit. Could potentially use tags to find all of them, though if needed.
