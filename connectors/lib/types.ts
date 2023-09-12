@@ -1,7 +1,5 @@
-import { CONNECTORS } from '../lib/constants'
+import { COGS } from '../lib/constants'
 
-export type ConnectorType = keyof typeof CONNECTORS
+export type CogType = keyof typeof COGS
 
-export type ConnectorConstructor = ConstructorParameters<
-	(typeof CONNECTORS)[ConnectorType]
->
+export type CogConstructor = ConstructorParameters<(typeof COGS)[CogType]>

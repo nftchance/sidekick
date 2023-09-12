@@ -1,4 +1,4 @@
-import { ConnectorType } from '@/connectors/lib/types'
+import { CogType } from '@/connectors/lib/types'
 
 import ConnectorConfig from './components/connector/Config'
 
@@ -6,7 +6,7 @@ export default async function Page({
 	searchParams
 }: {
 	searchParams?: {
-		type: ConnectorType
+		type: CogType
 	}
 }) {
 	// ! Using a base search parameter here to link to pre-seeded data.

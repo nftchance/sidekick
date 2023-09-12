@@ -1,5 +1,5 @@
 import Http from '../http/http'
 
-export const CONNECTORS = {
+export const COGS = {
 	http: Http
 } as const
