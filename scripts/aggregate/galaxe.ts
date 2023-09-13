@@ -7,7 +7,7 @@ const progressBar = new bar.SingleBar(
 		format:
 			'Progress |' +
 			'{bar}' +
-			'| {percentage}% || {combination} || Duration: {duration_formatted} || ETA: {eta_formatted}',
+			'| {percentage}% || {value}/{total} Chunks || Speed: {speed} Chunks/s || ETA: {eta}s || Duration: {duration}s',
 		barCompleteChar: '\u2588',
 		barIncompleteChar: '\u2591',
 		hideCursor: false
@@ -40,6 +40,7 @@ enum Status {
 }
 
 enum CredSource {
+	None = 'null',
 	TwitterSpace = '["TWITTER_SPACE"]',
 	TwitterLike = '["TWITTER_LIKE"]',
 	TwitterRT = '["TWITTER_RT"]',
@@ -56,11 +57,11 @@ enum CredSource {
 	Subgraph = '["SUBGRAPH"]',
 	LensPostMirror = '["LENS_POST_MIRROR"]',
 	LensPostUpvote = '["LENS_POST_UPVOTE"]',
-	LensProfileFollow = '["LENS_PROFILE_FOLLOW"]',
-	None = 'null'
+	LensProfileFollow = '["LENS_PROFILE_FOLLOW"]'
 }
 
 enum RewardTypes {
+	None = 'null',
 	OAT = '["OAT"]',
 	NFT = '["NFT"]',
 	Custom = '["CUSTOM"]',
@@ -68,17 +69,17 @@ enum RewardTypes {
 	DiscordRole = '["DISCORDROLE"]',
 	LoyaltyPoints = '["LOYALTYPOINTS"]',
 	LoyaltyPointsMysteryBox = '["LOYALTYPOINTSMYSTERYBOX"]',
-	MintList = '["MINTLIST"]',
-	None = 'null'
+	MintList = '["MINTLIST"]'
 }
 
 enum Verified {
+	None = 'null',
 	No = '[0]',
-	Yes = '[1]',
-	None = 'null'
+	Yes = '[1]'
 }
 
 enum SpaceCategories {
+	None = 'null',
 	DeFi = '["DeFi"]',
 	Dex = '["Dex"]',
 	Staking = '["Staking"]',
@@ -104,11 +105,11 @@ enum SpaceCategories {
 	Storage = '["Storage"]',
 	APIProvider = '["API Provider"]',
 	Layer1 = '["Layer 1"]',
-	Layer2 = '["Layer 2"]',
-	None = 'null'
+	Layer2 = '["Layer 2"]'
 }
 
 enum Chain {
+	None = 'null',
 	MATIC = '["MATIC"]',
 	BSC = '["BSC"]',
 	ETHEREUM = '["ETHEREUM"]',
@@ -140,13 +141,12 @@ enum Chain {
 	SEI = '["SEI"]',
 	ATLANTIC2 = '["ATLANTIC2"]',
 	INJECTIVE = '["INJECTIVE"]',
-	FLOW = '["FLOW"]',
-	None = 'null'
+	FLOW = '["FLOW"]'
 }
 
 enum GasTypes {
-	Gasless = '["Gasless"]',
-	None = 'null'
+	None = 'null',
+	Gasless = '["Gasless"]'
 }
 
 async function getGalaxeBatch(
@@ -238,10 +238,6 @@ async function save(
 	})
 
 	await Bun.write(Bun.file(`${hashedFolderName}/galaxe-${index}.json`), data)
-
-	progressBar.update({
-		combination: hexDigest.slice(0, 8)
-	})
 
 	return data
 }
@@ -343,7 +339,7 @@ async function run() {
 
 			start = response.data.campaigns.pageInfo.endCursor
 
-			hasNext = response.data.campaigns.pageInfo.hasNextPage
+			hasNext = response.data.campaigns.pageInfo.hasNextPage || false
 		}
 
 		progressBar.increment()

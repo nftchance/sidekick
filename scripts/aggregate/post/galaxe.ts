@@ -1,4 +1,5 @@
-import { readdirSync, unlinkSync } from 'node:fs'
+import { readdirSync } from 'node:fs'
+import {  } from 'node:worker_threads'
 
 const FOLDER_NAME = '.sidekick'
 
@@ -40,13 +41,19 @@ async function main() {
 			json.push(data)
 		}
 
-		data.push(
-			...json.reduce((acc, val) => {
-				const campaigns = val.data.campaigns.list
+		const deduped = json.reduce((acc, val) => {
+			if (!val.data.campaigns) return acc
 
-				return [...acc, ...campaigns]
-			}, [])
-		)
+			const campaigns = val.data.campaigns.list
+
+			if (!campaigns) return acc
+
+			return [...acc, ...campaigns]
+		}, [])
+
+		if (!deduped.length) continue
+
+		data.push(...deduped)
 	}
 
 	const dedupedData = data.reduce((acc, val) => {
