@@ -6,50 +6,69 @@ async function main() {
 	const folders = readdirSync(FOLDER_NAME)
 	const latest = folders.sort().pop()
 
-	const files = readdirSync(`${FOLDER_NAME}/${latest}`)
+	const hashedFolders = readdirSync(`${FOLDER_NAME}/${latest}`).filter(
+		folder => folder.endsWith('.json') === false
+	)
 
-	const sorted = files
-		.filter(file => file.startsWith('galaxe-'))
-		.sort((a, b) => {
-			const aNum = parseInt(a.split('-')[1].split('.')[0])
-			const bNum = parseInt(b.split('-')[1].split('.')[0])
+	const data = []
 
-			return aNum - bNum
-		})
+	for (const folder of hashedFolders) {
+		const folderPath = `${FOLDER_NAME}/${latest}/${folder}`
 
-	const json = []
+		const files = readdirSync(folderPath)
 
-	for (const filePath of sorted) {
-		const absoluteFilePath = `${FOLDER_NAME}/${latest}/${filePath}`
+		const sorted = files
+			.filter(file => file.startsWith('galaxe-'))
+			.sort((a, b) => {
+				const aNum = parseInt(a.split('-')[1].split('.')[0])
+				const bNum = parseInt(b.split('-')[1].split('.')[0])
 
-		const file = Bun.file(absoluteFilePath)
+				return aNum - bNum
+			})
 
-		const text = await file.text()
+		const json = []
 
-		const data = JSON.parse(text)
+		for (const filePath of sorted) {
+			const absoluteFilePath = `${folderPath}/${filePath}`
 
-		json.push(data)
+			const file = Bun.file(absoluteFilePath)
+
+			const text = await file.text()
+
+			const data = JSON.parse(text)
+
+			json.push(data)
+		}
+
+		data.push(
+			...json.reduce((acc, val) => {
+				const campaigns = val.data.campaigns.list
+
+				return [...acc, ...campaigns]
+			}, [])
+		)
 	}
 
-	const data = json.reduce((acc, val) => {
-		const campaigns = val.data.campaigns.list
+	const dedupedData = data.reduce((acc, val) => {
+		const { id, ...rest } = val
 
-		return [...acc, ...campaigns]
-	}, [])
+		return {
+			...acc,
+			[id]: {
+				...rest
+			}
+		}
+	}, {})
 
 	await Bun.write(
 		Bun.file(`${FOLDER_NAME}/${latest}/galaxe.json`),
-		JSON.stringify(data, null, 4)
+		JSON.stringify(dedupedData, null, 4)
 	)
 
-	for (const filePath of sorted) {
-		const absoluteFilePath = `${FOLDER_NAME}/${latest}/${filePath}`
-
-		unlinkSync(absoluteFilePath)
-	}
-
 	console.log(
-		`✔️ Wrote ${data.length} campaigns to ${FOLDER_NAME}/${latest}/galaxe.json`
+		`✔️ Wrote ${
+			Object.keys(dedupedData).length
+		} campaigns to ${FOLDER_NAME}/${latest}/galaxe.json`
 	)
 }
 
