@@ -7,7 +7,7 @@ const progressBar = new bar.SingleBar(
 		format:
 			'Progress |' +
 			'{bar}' +
-			'| {percentage}% || {value}/{total} Chunks || Speed: {speed} Chunks/s || ETA: {eta}s || Duration: {duration}s',
+			'| {percentage}% || {value}/{total} Chunks || {duration_formatted}/{eta_formatted}',
 		barCompleteChar: '\u2588',
 		barIncompleteChar: '\u2591',
 		hideCursor: false
@@ -225,13 +225,7 @@ async function save(
 
 	const statusFolderName = `${statusFolderTag}/${listTypeFolderTag}/${credSourceFolderTag}/${rewardTypeFolderTag}/${verifiedFolderTag}/${spaceCategoryFolderTag}/${chainFolderTag}/${gasTypeFolderTag}`
 
-	const hash = createHash('sha256')
-
-	hash.update(statusFolderName)
-
-	const hexDigest = hash.digest('hex').toString()
-
-	const hashedFolderName = `${folderName}/${hexDigest}`
+	const hashedFolderName = `${folderName}/${statusFolderName}`
 
 	mkdir(hashedFolderName, { recursive: true }, err => {
 		if (err) throw err
