@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { Cog } from '@/app/components/connector/Config'
+import { Cog } from '../cog'
 
 const initSchema = z.object({
 	body: z.string(),
@@ -40,12 +40,9 @@ const HttpSchema = z.object({
 	init: initSchema.partial()
 })
 
-type HttpSchemaType = z.infer<typeof HttpSchema>
-
-export default class Http<
-	T extends typeof HttpSchema,
-	P extends HttpSchemaType
-> extends Cog<T> {
+export default class Http<T extends typeof HttpSchema> extends Cog<
+	T extends typeof HttpSchema ? T : never
+> {
 	constructor() {
 		super(HttpSchema)
 	}

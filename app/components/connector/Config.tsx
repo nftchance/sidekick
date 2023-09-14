@@ -75,37 +75,3 @@ export default function ConnectorConfig({ type }: { type?: CogType }) {
 	)
 }
 
-type CogBuild = {
-	valid: boolean
-	value?: Partial<z.ParseParams>
-}
-
-export class Cog<T> {
-	schema
-	builds
-
-	constructor(_: T) {
-		this.schema = _
-
-		this.builds = [] as Array<CogBuild>
-	}
-
-	parse<P extends z.ZodTypeAny>(value: P) {
-		const valid = this.schema.safeParse(value)
-
-		const build: CogBuild = {
-			valid: valid.success,
-			value: valid ? this.schema.parse(value) : undefined
-		}
-
-		this.builds.push(build)
-
-		return build
-	}
-
-	latest() {
-		if (!this.builds.length) throw new Error('No builds found')
-
-		return this.builds[this.builds.length - 1]
-	}
-}

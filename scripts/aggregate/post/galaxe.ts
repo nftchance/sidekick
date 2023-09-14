@@ -1,81 +1,59 @@
-import { readdirSync } from 'node:fs'
-import {  } from 'node:worker_threads'
+import { appendFileSync, readdirSync } from 'node:fs'
+
+import { getAllFiles } from '@/lib/functions/aggregate'
 
 const FOLDER_NAME = '.sidekick'
+const PROJECT_KEY = 'galaxe'
 
 async function main() {
 	const folders = readdirSync(FOLDER_NAME)
-	const latest = folders.sort().pop()
+	const latest = folders
+		.filter(folder => folder.startsWith(PROJECT_KEY))
+		.sort()
+		.pop()
+	const aggregatePath = `${FOLDER_NAME}/${latest}`
+	const aggregate = await getAllFiles(PROJECT_KEY, aggregatePath)
 
-	const hashedFolders = readdirSync(`${FOLDER_NAME}/${latest}`).filter(
-		folder => folder.endsWith('.json') === false
-	)
+	await Bun.write(Bun.file(`${aggregatePath}/galaxe.json`), '{')
 
-	const data = []
+	const ids = new Set()
 
-	for (const folder of hashedFolders) {
-		const folderPath = `${FOLDER_NAME}/${latest}/${folder}`
+	for (const filePath of aggregate) {
+		const file = Bun.file(filePath)
 
-		const files = readdirSync(folderPath)
+		const text = await file.text()
 
-		const sorted = files
-			.filter(file => file.startsWith('galaxe-'))
-			.sort((a, b) => {
-				const aNum = parseInt(a.split('-')[1].split('.')[0])
-				const bNum = parseInt(b.split('-')[1].split('.')[0])
+		const { data } = JSON.parse(text)
 
-				return aNum - bNum
-			})
+		if (!data.campaigns) continue
 
-		const json = []
+		const campaigns: [] = data.campaigns.list
 
-		for (const filePath of sorted) {
-			const absoluteFilePath = `${folderPath}/${filePath}`
+		if (campaigns.length === 0) continue
 
-			const file = Bun.file(absoluteFilePath)
+		const campaignsDict = campaigns.reduce((acc, val: any) => {
+			if (ids.has(val.id)) return acc
 
-			const text = await file.text()
+			ids.add(val.id)
 
-			const data = JSON.parse(text)
+			return {
+				...acc,
+				[val.id]: val
+			}
+		}, {})
 
-			json.push(data)
-		}
+		if (Object.keys(campaignsDict).length === 0) continue
 
-		const deduped = json.reduce((acc, val) => {
-			if (!val.data.campaigns) return acc
+		// ! Slice to remove extra curly braces
+		const string = JSON.stringify(campaignsDict, null, 4).slice(1, -1)
 
-			const campaigns = val.data.campaigns.list
-
-			if (!campaigns) return acc
-
-			return [...acc, ...campaigns]
-		}, [])
-
-		if (!deduped.length) continue
-
-		data.push(...deduped)
+		appendFileSync(`${aggregatePath}/${PROJECT_KEY}.json`, `${string},\n`)
 	}
 
-	const dedupedData = data.reduce((acc, val) => {
-		const { id, ...rest } = val
-
-		return {
-			...acc,
-			[id]: {
-				...rest
-			}
-		}
-	}, {})
-
-	await Bun.write(
-		Bun.file(`${FOLDER_NAME}/${latest}/galaxe.json`),
-		JSON.stringify(dedupedData, null, 4)
-	)
+	appendFileSync(`${aggregatePath}/${PROJECT_KEY}.json`, '}')
 
 	console.log(
-		`✔️ Wrote ${
-			Object.keys(dedupedData).length
-		} campaigns to ${FOLDER_NAME}/${latest}/galaxe.json`
+		`✔️ Wrote ${ids.size} campaigns to ${FOLDER_NAME}/${latest}/${PROJECT_KEY}.json`
 	)
 }
 

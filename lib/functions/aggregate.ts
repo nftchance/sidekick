@@ -27,3 +27,41 @@ export async function getLatestAggregate<T>(startsWith: string) {
 		`${startsWith}.json`
 	)
 }
+
+export async function getAllFiles(
+	projectKey: string,
+	folderPath: string,
+	files: string[] = [],
+	parentFolderPath: string | undefined = undefined
+) {
+	if (parentFolderPath === undefined) parentFolderPath = folderPath
+
+	const contents = readdirSync(folderPath).filter(
+		contentName => contentName !== `${projectKey}.json`
+	)
+
+	const hasFolders = contents.some(
+		contentName => contentName.endsWith('.json') === false
+	)
+
+	if (hasFolders) {
+		for (const contentName of contents) {
+			const contentPath = `${folderPath}/${contentName}`
+			const parentPath = `${parentFolderPath}/${contentName}`
+
+			const isFolder = contentName.endsWith('.json') === false
+
+			if (isFolder) {
+				await getAllFiles(projectKey, contentPath, files, parentPath)
+			} else {
+				files.push(parentPath)
+			}
+		}
+	} else {
+		files.push(
+			...contents.map(contentName => `${parentFolderPath}/${contentName}`)
+		)
+	}
+
+	return files
+}

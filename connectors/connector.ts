@@ -1,5 +1,3 @@
-import { z } from 'zod'
-
 import { COGS } from './lib/constants'
 import { CogConstructor, CogType } from './lib/types'
 
