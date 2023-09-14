@@ -39,24 +39,24 @@ model Galaxe_Campaign {
     campaignParticipantId String?
     discordRoleId         String?
     premintId             String?
-    gamification          Gamification         @relation(fields: [gamificationId], references: [id])
-    dao                   DAO                  @relation(fields: [dAOId], references: [id])
-    space                 Space                @relation(fields: [spaceId], references: [id])
-    tokenReward           TokenReward          @relation(fields: [tokenRewardId], references: [id])
-    rewardInfo            RewardInfo           @relation(fields: [rewardInfoId], references: [id])
-    campaignParticipant   CampaignParticipant? @relation(fields: [campaignParticipantId], references: [id])
-    discordRole           DiscordRole?         @relation(fields: [discordRoleId], references: [id])
-    premint               Premint?             @relation(fields: [premintId], references: [id])
+    gamification          Galaxe_Gamification         @relation(fields: [gamificationId], references: [id])
+    dao                   Galaxe_DAO                  @relation(fields: [dAOId], references: [id])
+    space                 Galaxe_Space                @relation(fields: [spaceId], references: [id])
+    tokenReward           Galaxe_TokenReward          @relation(fields: [tokenRewardId], references: [id])
+    rewardInfo            Galaxe_RewardInfo           @relation(fields: [rewardInfoId], references: [id])
+    campaignParticipant   Galaxe_CampaignParticipant? @relation(fields: [campaignParticipantId], references: [id])
+    discordRole           Galaxe_DiscordRole?         @relation(fields: [discordRoleId], references: [id])
+    premint               Galaxe_Premint?             @relation(fields: [premintId], references: [id])
 }
 
-model Gamification {
+model Galaxe_Gamification {
     id              String            @id
     type            String
     typename        String            @map("__typename")
     Galaxe_Campaign Galaxe_Campaign[]
 }
 
-model DAO {
+model Galaxe_DAO {
     id              String            @id
     name            String
     logo            String
@@ -66,7 +66,7 @@ model DAO {
     Galaxe_Campaign Galaxe_Campaign[]
 }
 
-model TokenReward {
+model Galaxe_TokenReward {
     id                   String            @id
     userTokenAmount      String
     tokenAddress         String
@@ -79,7 +79,7 @@ model TokenReward {
     Galaxe_Campaign      Galaxe_Campaign[]
 }
 
-model Space {
+model Galaxe_Space {
     id              String            @id
     name            String
     thumbnail       String
@@ -89,20 +89,20 @@ model Space {
     Galaxe_Campaign Galaxe_Campaign[]
 }
 
-model DiscordRole {
-    id              String            @id
+model Galaxe_DiscordRole {
+    id              String              @id
     guildId         String
     guildName       String
     roleId          String
     roleName        String
     inviteLink      String
-    typename        String            @map("__typename")
+    typename        String              @map("__typename")
     Galaxe_Campaign Galaxe_Campaign[]
-    RewardInfo      RewardInfo[]
+    RewardInfo      Galaxe_RewardInfo[]
 }
 
-model Premint {
-    id              String            @id
+model Galaxe_Premint {
+    id              String              @id
     startTime       Int
     endTime         Int
     chain           String
@@ -110,22 +110,22 @@ model Premint {
     totalSupply     Int
     contractAddress String
     banner          String
-    typename        String            @map("__typename")
+    typename        String              @map("__typename")
     Galaxe_Campaign Galaxe_Campaign[]
-    RewardInfo      RewardInfo[]
+    RewardInfo      Galaxe_RewardInfo[]
 }
 
-model RewardInfo {
-    id              String            @id
+model Galaxe_RewardInfo {
+    id              String              @id
     premintId       String?
     discordRoleId   String?
-    premint         Premint?          @relation(fields: [premintId], references: [id])
-    discordRole     DiscordRole?      @relation(fields: [discordRoleId], references: [id])
-    typename        String            @map("__typename")
+    premint         Galaxe_Premint?     @relation(fields: [premintId], references: [id])
+    discordRole     Galaxe_DiscordRole? @relation(fields: [discordRoleId], references: [id])
+    typename        String              @map("__typename")
     Galaxe_Campaign Galaxe_Campaign[]
 }
 
-model CampaignParticipant {
+model Galaxe_CampaignParticipant {
     id                 String            @id
     participantsCount  Int
     bountyWinnersCount Int

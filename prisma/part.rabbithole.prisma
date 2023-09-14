@@ -2,8 +2,8 @@
 // .
 // ./prisma/part.rabbithole.prisma
 
-model Quest {
-    id               String   @id
+model Rabbithole_Quest {
+    id               String             @id
     appLink          String
     iconOption       String
     imagePath        String
@@ -14,19 +14,19 @@ model Quest {
     network          String
     receiptsMinted   Int
     status           String
-    createdAt        DateTime @default(now())
+    createdAt        DateTime           @default(now())
     contractAddress  String
     creatorAddress   String
-    tasks            Task[]
+    tasks            Rabbithole_Task[]
     allowlistEnabled Boolean
     isReceiptEnabled Boolean
     rewardId         String?
-    reward           Reward?  @relation(fields: [rewardId], references: [id])
+    reward           Rabbithole_Reward? @relation(fields: [rewardId], references: [id])
     projectId        String
-    project          Project  @relation(fields: [projectId], references: [id])
+    project          Rabbithole_Project @relation(fields: [projectId], references: [id])
 }
 
-model Reward {
+model Rabbithole_Reward {
     id                   String @id @default(uuid())
     amount               String
     totalAllocated       Int
@@ -39,24 +39,24 @@ model Reward {
     ethValue             String
     tokenContractAddress String
 
-    Quest Quest[]
+    quest Rabbithole_Quest[]
 }
 
-model Task {
-    id          String  @id @default(uuid())
+model Rabbithole_Task {
+    id          String            @id @default(uuid())
     name        String
     action      String
     network     String
     description String
-    Quest       Quest?  @relation(fields: [questId], references: [id])
+    quest       Rabbithole_Quest? @relation(fields: [questId], references: [id])
     questId     String?
 }
 
-model Project {
-    id          String  @id
+model Rabbithole_Project {
+    id          String             @id
     name        String
     description String?
     iconOption  String
     imagePath   String
-    quests      Quest[]
+    quests      Rabbithole_Quest[]
 }

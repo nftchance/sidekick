@@ -10,7 +10,7 @@ export async function seedRabbithole(client: PrismaClient) {
 	for (const obj in Object.keys(aggregate)) {
 		const { quest, task, reward, project } = aggregate[obj]
 
-		client.quest.upsert({
+		client.rabbithole_Quest.upsert({
 			where: { id: quest.id },
 			update: {},
 			create: {
