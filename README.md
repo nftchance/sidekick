@@ -13,12 +13,6 @@ bun i
 
 ## Commands
 
-- 👷 : For Development
-- 👁️ : For Analysis
-- 🧩 : Chunked Aggregation
-- 🏗️ : Build Process
-- ✨ : Automatic
-
 - 👷 `bun dev` -- Run the admin interface that is used for Sandbox visualization.
   - Access the server at [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 - 👁️ 🧩 `bun aggregate:galaxe` -- Retrieve historical campaigns on Galaxe.
