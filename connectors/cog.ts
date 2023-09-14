@@ -1,21 +1,19 @@
 import { z } from 'zod'
 
-// type CogBuild = {
-// 	valid: boolean
-// 	value?: Partial<z.ParseParams>
-// }
-
-export class Cog<T> {
+export class Cog<T extends z.ZodTypeAny> {
 	schema
 	builds
 
 	constructor(_: T) {
 		this.schema = _
 
-		this.builds = [] as Array<any>
+		this.builds = [] as Array<{
+			valid: boolean
+			value?: z.infer<T>
+		}>
 	}
 
-	parse<Tp extends z.ZodTypeAny>(value: any) {
+	parse(value: any) {
 		const valid = this.schema.safeParse(value)
 
 		const build: {
