@@ -1,5 +1,5 @@
+import { CogConstructor, CogType } from './cog'
 import { COGS } from './lib/constants'
-import { CogConstructor, CogType } from './lib/types'
 
 export class Connector<T extends CogType> {
 	cog

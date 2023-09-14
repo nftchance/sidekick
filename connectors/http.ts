@@ -1,8 +1,11 @@
 import { z } from 'zod'
 
-import { Cog } from '../cog'
+import { Cog } from './cog'
 
-const httpSchema = z.object({
+export type HttpRequestType = typeof HttpRequest
+export type HttpResponseType = Promise<Response | void>
+
+export const HttpRequest = z.object({
 	url: z.string().default('https://example.com'),
 	init: z
 		.object({
@@ -42,21 +45,13 @@ const httpSchema = z.object({
 		.partial()
 })
 
-export default class Http extends Cog<typeof httpSchema> {
+export default class Http extends Cog<HttpRequestType, HttpResponseType> {
 	constructor() {
-		super(httpSchema)
+		super(HttpRequest)
 	}
 
-	async get(): Promise<Response | void> {
-		const latest = this.latest()
-
-		const { valid, value } = latest
-
-		if (!valid) throw new Error('Invalid build')
-
-		if (!value) throw new Error('No value found')
-
-		const { url, init } = value
+	async get() {
+		const { url, init } = this.value()
 
 		const response = await fetch(url, init)
 			.then(response => response)

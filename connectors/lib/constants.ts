@@ -1,6 +1,6 @@
-import Http from '../http/http'
+import Http from '../http'
 
 export const COGS = {
-	http: Http,
+	http: Http
 	// flipsideSdk: class FlipsideSdk {}
 } as const
