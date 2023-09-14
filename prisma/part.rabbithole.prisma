@@ -1,0 +1,58 @@
+model Quest {
+    id               String   @id
+    appLink          String
+    iconOption       String
+    imagePath        String
+    name             String
+    questEnd         DateTime
+    questStart       DateTime
+    description      String
+    network          String
+    receiptsMinted   Int
+    status           String
+    createdAt        DateTime @default(now())
+    contractAddress  String
+    creatorAddress   String
+    tasks            Task[]
+    allowlistEnabled Boolean
+    isReceiptEnabled Boolean
+    rewardId         String?
+    reward           Reward?  @relation(fields: [rewardId], references: [id])
+    projectId        String
+    project          Project  @relation(fields: [projectId], references: [id])
+}
+
+model Reward {
+    id                   String @id @default(uuid())
+    amount               String
+    totalAllocated       Int
+    type                 String
+    tokenSymbol          String
+    token                String
+    decimals             Int
+    network              String
+    s3Link               String
+    ethValue             String
+    tokenContractAddress String
+
+    Quest Quest[]
+}
+
+model Task {
+    id          String  @id @default(uuid())
+    name        String
+    action      String
+    network     String
+    description String
+    Quest       Quest?  @relation(fields: [questId], references: [id])
+    questId     String?
+}
+
+model Project {
+    id          String  @id
+    name        String
+    description String?
+    iconOption  String
+    imagePath   String
+    quests      Quest[]
+}

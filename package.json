@@ -8,9 +8,14 @@
     "start": "next start",
     "lint": "next lint",
     "aggregate:galaxe": "bun run scripts/aggregate/galaxe.ts",
-    "postaggregate:galaxe": "bun run scripts/aggregate/post/galaxe.ts"
+    "aggregate:rabbithole": "bun run scripts/aggregate/rabbithole.ts",
+    "postaggregate:galaxe": "bun run scripts/aggregate/post/galaxe.ts",
+    "postaggregate:rabbithole": "bun run scripts/aggregate/post/rabbithole.ts",
+    "preprisma:generate": "rm -rf prisma/schema.prisma && cat prisma/part.*.prisma > prisma/schema.prisma",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "5.2.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/node": "^20.6.0",
     "@types/react": "18.2.21",

@@ -1,5 +1,4 @@
 import bar from 'cli-progress'
-import { createHash } from 'node:crypto'
 import { mkdir } from 'node:fs'
 
 const progressBar = new bar.SingleBar(
@@ -24,7 +23,8 @@ const LOOK_AHEAD = true
 
 const TIMESTAMP = new Date().toISOString().replace(/:/g, '-')
 
-const FOLDER_NAME = `./.sidekick/${TIMESTAMP}`
+const PROJECT_KEY = 'galaxe'
+const FOLDER_NAME = `./.sidekick/${PROJECT_KEY}-${TIMESTAMP}`
 
 enum ListType {
 	Trending = 'Trending',
@@ -249,7 +249,7 @@ async function test() {
 		START
 	)
 
-	save(
+	await save(
 		Status.None,
 		ListType.Trending,
 		CredSource.None,
@@ -268,22 +268,16 @@ async function run() {
 		Object.values(ListType).flatMap(listType =>
 			Object.values(CredSource).flatMap(credSource =>
 				Object.values(RewardTypes).flatMap(rewardType =>
-					Object.values(Verified).flatMap(verified =>
-						Object.values(SpaceCategories).flatMap(spaceCategory =>
-							Object.values(Chain).flatMap(chain =>
-								Object.values(GasTypes).map(gasType => ({
-									status,
-									listType,
-									credSource,
-									rewardType,
-									verified,
-									spaceCategory,
-									chain,
-									gasType
-								}))
-							)
-						)
-					)
+					Object.values(Chain).map(chain => ({
+						status,
+						listType,
+						credSource,
+						rewardType,
+						verified: Verified.None,
+						spaceCategory: SpaceCategories.None,
+						chain,
+						gasType: GasTypes.None
+					}))
 				)
 			)
 		)
@@ -305,35 +299,40 @@ async function run() {
 		let hasNext = true
 
 		while (hasNext) {
-			const response = await getGalaxeBatch(
-				status,
-				listType,
-				credSource,
-				rewardType,
-				verified,
-				spaceCategory,
-				chain,
-				gasType,
-				start,
-				LOOK_AHEAD
-			)
+			try {
+				const response = await getGalaxeBatch(
+					status,
+					listType,
+					credSource,
+					rewardType,
+					verified,
+					spaceCategory,
+					chain,
+					gasType,
+					start,
+					LOOK_AHEAD
+				)
 
-			save(
-				status,
-				listType,
-				credSource,
-				rewardType,
-				verified,
-				spaceCategory,
-				chain,
-				gasType,
-				start,
-				response
-			)
+				await save(
+					status,
+					listType,
+					credSource,
+					rewardType,
+					verified,
+					spaceCategory,
+					chain,
+					gasType,
+					start,
+					response
+				)
 
-			start = response.data.campaigns.pageInfo.endCursor
-
-			hasNext = response.data.campaigns.pageInfo.hasNextPage || false
+				start = response?.data?.campaigns?.pageInfo?.endCursor
+				hasNext =
+					response?.data?.campaigns?.pageInfo?.hasNextPage || false
+			} catch (e) {
+				console.log(e)
+				break
+			}
 		}
 
 		progressBar.increment()

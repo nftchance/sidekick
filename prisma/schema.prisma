@@ -1,5 +1,8 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This file is auto-generated. Do not edit!
+// To make changes to this file, edit the associated *.part.prisma file and run prisma:generate.
+// .
+// .
+// ./prisma/part.base.prisma
 
 generator client {
     provider = "prisma-client-js"
@@ -9,6 +12,199 @@ datasource db {
     provider = "sqlite"
     url      = env("DATABASE_URL")
 }
+model Galaxe_Campaign {
+    id               String  @id
+    name             String
+    thumbnail        String
+    rewardName       String
+    type             String
+    isBookmarked     Boolean
+    numberID         Int
+    info             String
+    useCred          Boolean
+    formula          String
+    gasType          String
+    requirementInfo  String
+    description      String
+    enableWhitelist  Boolean
+    chain            String
+    startTime        Int
+    status           String
+    requireEmail     Boolean
+    requireUsername  Boolean
+    distributionType String
+    endTime          Int
+    cap              Int
+    loyaltyPoints    Int
+
+    childrenCampaigns   String?
+    tokenRewardContract String?
+
+    createdAt DateTime @default(now())
+
+    recurringType         String
+    gamificationId        String
+    gamification          Gamification         @relation(fields: [gamificationId], references: [id])
+    dAOId                 String
+    dao                   DAO                  @relation(fields: [dAOId], references: [id])
+    spaceId               String
+    space                 Space                @relation(fields: [spaceId], references: [id])
+    tokenRewardId         String
+    tokenReward           TokenReward          @relation(fields: [tokenRewardId], references: [id])
+    rewardInfoId          String
+    rewardInfo            RewardInfo           @relation(fields: [rewardInfoId], references: [id])
+    campaignParticipantId String?
+    campaignParticipant   CampaignParticipant? @relation(fields: [campaignParticipantId], references: [id])
+    DiscordRole           DiscordRole?         @relation(fields: [discordRoleId], references: [id])
+    discordRoleId         String?
+    Premint               Premint?             @relation(fields: [premintId], references: [id])
+    premintId             String?
+}
+
+model Gamification {
+    id              String            @id
+    type            String
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model DAO {
+    id              String            @id
+    name            String
+    logo            String
+    alias           String
+    isVerified      Boolean
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model TokenReward {
+    id                   String            @id
+    userTokenAmount      String
+    tokenAddress         String
+    depositedTokenAmount String
+    tokenRewardId        Int
+    tokenDecimal         String
+    tokenLogo            String
+    tokenSymbol          String
+    typename             String            @map("__typename")
+    Galaxe_Campaign      Galaxe_Campaign[]
+}
+
+model Space {
+    id              String            @id
+    name            String
+    thumbnail       String
+    alias           String
+    isVerified      Boolean
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model DiscordRole {
+    id              String            @id
+    guildId         String
+    guildName       String
+    roleId          String
+    roleName        String
+    inviteLink      String
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+    RewardInfo      RewardInfo[]
+}
+
+model Premint {
+    id              String            @id
+    startTime       Int
+    endTime         Int
+    chain           String
+    price           Int
+    totalSupply     Int
+    contractAddress String
+    banner          String
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+    RewardInfo      RewardInfo[]
+}
+
+model RewardInfo {
+    id              String            @id
+    premint         Premint?          @relation(fields: [premintId], references: [id])
+    premintId       String?
+    discordRole     DiscordRole?      @relation(fields: [discordRoleId], references: [id])
+    discordRoleId   String?
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model CampaignParticipant {
+    id                 String            @id
+    participantsCount  Int
+    bountyWinnersCount Int
+    typename           String            @map("__typename")
+    Galaxe_Campaign    Galaxe_Campaign[]
+}
+model Quest {
+    id               String   @id
+    appLink          String
+    iconOption       String
+    imagePath        String
+    name             String
+    questEnd         DateTime
+    questStart       DateTime
+    description      String
+    network          String
+    receiptsMinted   Int
+    status           String
+    createdAt        DateTime @default(now())
+    contractAddress  String
+    creatorAddress   String
+    tasks            Task[]
+    allowlistEnabled Boolean
+    isReceiptEnabled Boolean
+    rewardId         String?
+    reward           Reward?  @relation(fields: [rewardId], references: [id])
+    projectId        String
+    project          Project  @relation(fields: [projectId], references: [id])
+}
+
+model Reward {
+    id                   String @id @default(uuid())
+    amount               String
+    totalAllocated       Int
+    type                 String
+    tokenSymbol          String
+    token                String
+    decimals             Int
+    network              String
+    s3Link               String
+    ethValue             String
+    tokenContractAddress String
+
+    Quest Quest[]
+}
+
+model Task {
+    id          String  @id @default(uuid())
+    name        String
+    action      String
+    network     String
+    description String
+    Quest       Quest?  @relation(fields: [questId], references: [id])
+    questId     String?
+}
+
+model Project {
+    id          String  @id
+    name        String
+    description String?
+    iconOption  String
+    imagePath   String
+    quests      Quest[]
+}
+// .
+// .
+// ./prisma/part.sidekick.prisma
 
 model ConnectorType {
     id Int @id @default(autoincrement())

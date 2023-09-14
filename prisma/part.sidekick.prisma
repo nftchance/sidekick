@@ -1,0 +1,25 @@
+// .
+// .
+// ./prisma/part.sidekick.prisma
+
+model ConnectorType {
+    id Int @id @default(autoincrement())
+
+    name String
+
+    created   DateTime    @default(now())
+    updated   DateTime    @updatedAt
+    Connector Connector[]
+}
+
+model Connector {
+    id Int @id @default(autoincrement())
+
+    name String
+
+    type   ConnectorType @relation(fields: [typeId], references: [id])
+    typeId Int
+
+    created DateTime @default(now())
+    updated DateTime @updatedAt
+}

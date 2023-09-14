@@ -1,0 +1,130 @@
+model Galaxe_Campaign {
+    id                  String   @id
+    name                String
+    thumbnail           String
+    rewardName          String
+    type                String
+    isBookmarked        Boolean
+    numberID            Int
+    info                String
+    useCred             Boolean
+    formula             String
+    gasType             String
+    requirementInfo     String
+    description         String
+    enableWhitelist     Boolean
+    chain               String
+    startTime           Int
+    status              String
+    requireEmail        Boolean
+    requireUsername     Boolean
+    distributionType    String
+    endTime             Int
+    cap                 Int
+    loyaltyPoints       Int
+    childrenCampaigns   String?
+    tokenRewardContract String?
+    recurringType       String
+    createdAt           DateTime @default(now())
+
+    gamificationId        String
+    dAOId                 String
+    spaceId               String
+    tokenRewardId         String
+    rewardInfoId          String
+    campaignParticipantId String?
+    discordRoleId         String?
+    premintId             String?
+    gamification          Gamification         @relation(fields: [gamificationId], references: [id])
+    dao                   DAO                  @relation(fields: [dAOId], references: [id])
+    space                 Space                @relation(fields: [spaceId], references: [id])
+    tokenReward           TokenReward          @relation(fields: [tokenRewardId], references: [id])
+    rewardInfo            RewardInfo           @relation(fields: [rewardInfoId], references: [id])
+    campaignParticipant   CampaignParticipant? @relation(fields: [campaignParticipantId], references: [id])
+    discordRole           DiscordRole?         @relation(fields: [discordRoleId], references: [id])
+    premint               Premint?             @relation(fields: [premintId], references: [id])
+}
+
+model Gamification {
+    id              String            @id
+    type            String
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model DAO {
+    id              String            @id
+    name            String
+    logo            String
+    alias           String
+    isVerified      Boolean
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model TokenReward {
+    id                   String            @id
+    userTokenAmount      String
+    tokenAddress         String
+    depositedTokenAmount String
+    tokenRewardId        Int
+    tokenDecimal         String
+    tokenLogo            String
+    tokenSymbol          String
+    typename             String            @map("__typename")
+    Galaxe_Campaign      Galaxe_Campaign[]
+}
+
+model Space {
+    id              String            @id
+    name            String
+    thumbnail       String
+    alias           String
+    isVerified      Boolean
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model DiscordRole {
+    id              String            @id
+    guildId         String
+    guildName       String
+    roleId          String
+    roleName        String
+    inviteLink      String
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+    RewardInfo      RewardInfo[]
+}
+
+model Premint {
+    id              String            @id
+    startTime       Int
+    endTime         Int
+    chain           String
+    price           Int
+    totalSupply     Int
+    contractAddress String
+    banner          String
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+    RewardInfo      RewardInfo[]
+}
+
+model RewardInfo {
+    id              String            @id
+    premintId       String?
+    discordRoleId   String?
+    premint         Premint?          @relation(fields: [premintId], references: [id])
+    discordRole     DiscordRole?      @relation(fields: [discordRoleId], references: [id])
+    typename        String            @map("__typename")
+    Galaxe_Campaign Galaxe_Campaign[]
+}
+
+model CampaignParticipant {
+    id                 String            @id
+    participantsCount  Int
+    bountyWinnersCount Int
+    typename           String            @map("__typename")
+    Galaxe_Campaign    Galaxe_Campaign[]
+}

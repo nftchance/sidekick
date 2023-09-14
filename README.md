@@ -13,11 +13,15 @@ bun i
 
 ## Commands
 
-👷 : For Development
-
-👁️ : For Analysis
+- 👷 : For Development
+- 👁️ : For Analysis
+- 🧩 : Chunked Aggregation
+- 🏗️ : Build Process
+- ✨ : Automatic
 
 - 👷 `bun dev` -- Run the admin interface that is used for Sandbox visualization.
   - Access the server at [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-- 👁️ `bun aggregate:galaxe` -- Retrieve the historical campaigns that have run on Galaxe in chunks and then seal them into one.
-    - Currently, we only get the 10,000 most recent campaigns due to their API having this hard limit. Could potentially use tags to find all of them, though if needed.
+- 👁️ 🧩 `bun aggregate:galaxe` -- Retrieve historical campaigns on Galaxe.
+- 👁️ 🧩 `bun aggregate:rabbithole` -- Retrieve historical campaigns on Rabbithole.
+- 🏗️ 🧩 ✨ `bun prisma:generate` -- Combine the parts of the Prisma schema and generate the core schema.
+
