@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 
-import { seedGalaxe } from './seed/fixture.galaxe'
-import { seedRabbithole } from './seed/fixture.rabbithole'
+import { seedGalaxe } from './fixtures/fixture.galaxe'
+import { seedRabbithole } from './fixtures/fixture.rabbithole'
 
 const prisma = new PrismaClient()
 

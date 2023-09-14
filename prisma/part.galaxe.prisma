@@ -1,3 +1,7 @@
+// .
+// .
+// ./prisma/part.galaxe.prisma
+
 model Galaxe_Campaign {
     id                  String   @id
     name                String

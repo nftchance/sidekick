@@ -1,3 +1,7 @@
+// .
+// .
+// ./prisma/part.rabbithole.prisma
+
 model Quest {
     id               String   @id
     appLink          String
